@@ -18,10 +18,9 @@ return new class extends Migration
             $table->string('phone')->index();
             $table->string('email')->unique();
             $table->enum('user_type', ['user', 'admin'])->index();
-            $table->string('username')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('referral_code')->unique();
+            $table->string('referral_code')->unique()->nullable();
             $table->string('referred_by')->nullable();
             $table->rememberToken();
             $table->timestamps();
