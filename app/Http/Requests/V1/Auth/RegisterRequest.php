@@ -9,40 +9,36 @@ class RegisterRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
+     *
+     * @return bool
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, mixed>
      */
-    public function rules(): array
+    public function rules()
     {
-        $rules = [
+        return [
             'first_name' => ['required', 'string', 'max:50'],
             'last_name' => ['required', 'string', 'max:50'],
             'email' => ['required', 'string', 'email', 'max:50', 'unique:users'],
+            'phone' => ['required', 'numeric', 'digits_between:10,15', 'unique:users'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
-            'referred_by' => ['nullable', 'string']
+            'referred_by' => ['nullable', 'string'],
         ];
-
-        if ($this->has('referred_by')) {
-            // $rules['referred_by'] = ['nullable', 'string', new ReferralCodeExists];
-            // return User::where('referral_code', $value)->exists();
-        }
-
-        return $rules;
     }
-
+    /**
+     * Extract user attributes from validated data.
+     */
     public function userAttributes()
     {
-        $validated = $this->safe()
-            ->except(['referral_code', 'confirmed']);
-
+        $validated = $this->safe()->except(['referral_code', 'confirmed']);
         $validated['password'] = Hash::make($validated['password']);
 
         if ($this->has('referred_by')) {
