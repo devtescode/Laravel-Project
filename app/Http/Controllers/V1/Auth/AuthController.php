@@ -3,48 +3,72 @@
 namespace App\Http\Controllers\V1\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\V1\Auth\LoginRequest;
 use App\Http\Requests\V1\Auth\RegisterRequest;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
+use App\Support\Utils;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
     public function register(RegisterRequest $request)
     {
         try {
-            $validatedData = $request->validated();
-            // Extract user attributes from the validated request
-            // $userAttributes = $request->userAttributes();
-            
-            // Create the user
-            // $user = User::create($userAttributes);
-            
-            // Generate the authentication token
-            // $token = $user->createToken('authToken')->plainTextToken;
-    
-            // Prepare the success response data
-            // $validatedData = $request->validated();
-            $data = [
-                // "token" => $token,
-                "user" => $validatedData,
-                "status" => true,
-                "message" => "User registered successfully"
-            ];
-    
-            return response()->json($data, 201); // Use 201 Created status code
+            $userAttributes = $request->userAttributes();
+            $user = User::create($userAttributes);
+
+            $token = $user->createToken('authToken')->plainTextToken;
+            return Utils::successResp(['token' => $token, 'user' => $user]);
+
         } catch (\Throwable $th) {
-            $data = [
-                "status" => "error",
-                "message" => "An error occurred while registering the user.",
-                "error" => $th->getMessage(),
-            ];
-            return response()->json($data, 500);
+            return Utils::errorResp($th->getMessage());
         }
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        return response()->json(['message' => 'This is an example API login']);
+        $req = $request->validated();
+        $user = User::whereEmail($req['email'])->first();
+
+        // if (!$user || !Hash::check($req['password'], $user->password)) {
+        //     return Utils::validateResp([
+        //         'email' => ['The password or user email is invalid.']
+        //     ]);
+        // }
+        if (!$user || !Hash::check($req['password'], $user->password)) {
+            return response()->json([
+                'message' => 'The password or user email is invalid.',
+                'errors' => [
+                    'email' => ['The password or user email is invalid.']
+                ]
+            ], 422);
+        }
+
+        return Utils::successResp([
+            'token' => $user->createToken('authToken')->plainTextToken,
+            'user' => $user,
+        ]);
+    }
+
+    public function refreshToken(Request $request)
+    {
+        $user = $request->user();
+
+        return Utils::successResp([
+            'token' => $user->createToken('authToken')->plainTextToken,
+            'user' => $user,
+        ]);
+    }
+
+    /**
+     * log user out
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logout(Request $request)
+    {
+        $request->user()->tokens()->delete();
+        return Utils::successResp([], 'Successfully logged out');
     }
 }
