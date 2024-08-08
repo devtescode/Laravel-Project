@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('phone')->index();
             $table->string('email')->unique();
-            $table->enum('user_type', ['user', 'admin'])->index();
+            $table->enum('user_type', ['user', 'admin', 'driver'])->default('user')->index();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('referral_code')->unique()->nullable();

@@ -31,6 +31,7 @@ class RegisterRequest extends FormRequest
             'phone' => ['required', 'numeric', 'digits_between:10,15', 'unique:users'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
             'referred_by' => ['nullable', 'string'],
+            'user_type' => ['required', 'string', 'in:user,admin,driver']
         ];
     }
     /**
