@@ -24,7 +24,7 @@ class RegisterRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rules = [
             'first_name' => ['required', 'string', 'max:50'],
             'last_name' => ['required', 'string', 'max:50'],
             'email' => ['required', 'string', 'email', 'max:50', 'unique:users'],
@@ -33,6 +33,22 @@ class RegisterRequest extends FormRequest
             'referred_by' => ['nullable', 'string'],
             'user_type' => ['required', 'string', 'in:user,admin,driver']
         ];
+
+        if ($this->input('user_type') === 'driver') {
+            $rules = array_merge($rules, [
+                'vehicle_name' => ['nullable', 'string', 'max:255'],
+                'vehicle_color' => ['nullable', 'string', 'max:50'],
+                'license_plate' => ['nullable', 'string', 'max:50', 'unique:drivers'],
+                'vehicle_type' => ['nullable', 'string', 'max:50'],
+                'current_lat' => ['nullable', 'numeric'],
+                'current_lng' => ['nullable', 'numeric'],
+                'available' => ['nullable', 'boolean'],
+                'license_number' => ['nullable', 'string', 'max:50'],
+                'profile_complete' => ['nullable', 'boolean'],
+            ]);
+        }
+
+        return $rules;
     }
     /**
      * Extract user attributes from validated data.
@@ -44,6 +60,10 @@ class RegisterRequest extends FormRequest
 
         if ($this->has('referred_by')) {
             $validated['referred_by'] = \trim(\strip_tags($this->input('referred_by')));
+        }
+
+        if ($validated['user_type'] === 'driver') {
+            $validated['profile_complete'] = false;
         }
 
         return collect($validated)
