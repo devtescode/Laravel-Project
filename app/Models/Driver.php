@@ -22,7 +22,9 @@ class Driver extends Model
         'profile_complete',
     ];
 
-
+    protected $hidden = [
+        'id'
+    ];
     public function user()
     {
         return $this->belongsTo(User::class);

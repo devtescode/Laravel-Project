@@ -18,7 +18,7 @@ class UserController extends Controller
             $user = User::find($userId);
 
             if (!$user) {
-                return Utils::errorResp([], 'User not found');
+                return Utils::errorResp('User not found');
             }
 
             $profile = [];
