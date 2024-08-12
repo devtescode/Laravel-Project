@@ -4,6 +4,8 @@ use App\Http\Controllers\V1\Auth\AuthController;
 use App\Http\Controllers\V1\Auth\PasswordController;
 use App\Http\Controllers\V1\Profile\DriverController;
 use App\Http\Controllers\V1\Profile\UserController;
+use App\Http\Controllers\V1\Ride\UserRideController;
+use App\Http\Controllers\V1\Ride\DriverRideController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -29,8 +31,12 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:sanctum'], function () {
     Route::delete('/user/{userId}', [UserController::class, 'deleteUserAccount']);
 
     Route::patch('/driver/updateProfile', [DriverController::class, 'updateDriverProfile']);
-    Route::put('/driver/updateLocation', [DriverController::class, 'updateDriverLocation']);
+    Route::patch('/driver/updateLocation', [DriverController::class, 'updateDriverLocation']);
     Route::get('/driver/available', [DriverController::class, 'getAvailableDrivers']);
+
+    Route::post('/user/createRide', [UserRideController::class, 'createRide']);
+    Route::get('/driver/getNewRide', [DriverRideController::class, 'getNewRequestedRides']);
+    Route::get('/driver/getRideDetails/{rideId}', [DriverRideController::class, 'getRideDetails']);
 });
 
 
