@@ -37,6 +37,7 @@ Route::group(['prefix' => 'v1', 'middleware' => 'auth:sanctum'], function () {
     Route::post('/user/createRide', [UserRideController::class, 'createRide']);
     Route::get('/driver/getNewRide', [DriverRideController::class, 'getNewRequestedRides']);
     Route::get('/driver/getRideDetails/{rideId}', [DriverRideController::class, 'getRideDetails']);
+    Route::patch('/user/updateRide/{rideId}', [DriverRideController::class, 'updateRide']);
 });
 
 
