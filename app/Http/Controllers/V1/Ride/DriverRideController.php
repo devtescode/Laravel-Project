@@ -21,8 +21,7 @@ class DriverRideController extends Controller
     }
 
 
-    public function getRideDetails($rideId)
-    {
+    public function getRideDetails($rideId) {
         try {
             $ride = Ride::find($rideId);
 
@@ -34,6 +33,10 @@ class DriverRideController extends Controller
         } catch (\Throwable $th) {
             return Utils::errorResp($th->getMessage());
         }
+    }
+
+    public function updateRide($rideId) {
+
     }
 
 }
